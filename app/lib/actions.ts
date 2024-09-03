@@ -113,7 +113,7 @@ export async function getUserViaId(id: string | undefined) {
     return r[0]
   } catch (error) {
     console.log('Failed to get a user via id')
-    throw new Error('Failed to get a user via id')
+    throw error
   }
   
 }
