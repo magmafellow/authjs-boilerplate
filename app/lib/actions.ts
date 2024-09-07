@@ -4,9 +4,11 @@ import { auth, signIn, signOut } from '@/auth'
 import { z } from 'zod'
 import { neon } from '@neondatabase/serverless'
 import { redirect } from 'next/navigation'
+import { sql } from 'drizzle-orm'
 import { signUpSchemaCredentials, updateProfileSchema } from './defenitions'
 import { v4 } from 'uuid'
 import { unstable_noStore } from 'next/cache'
+import { db } from '@/db'
 
 export async function loginOAuth(providerString: string) {
   await signIn(providerString)
@@ -105,12 +107,9 @@ export async function updateProfile(id: string, prevState: any, formData: FormDa
 export async function getUserViaId(id: string | undefined) {
   unstable_noStore()
   
-  const sql = neon(process.env.DATABASE_URL ? process.env.DATABASE_URL : '')
-
   try {
-    const r = await sql`SELECT * FROM person WHERE id=${id}`
+    const r = await db.execute(sql`SELECT * FROM person WHERE id=${id}`)
     console.log(r)
-    return r[0]
   } catch (error) {
     console.log('Failed to get a user via id')
     throw error
